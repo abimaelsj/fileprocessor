@@ -49,10 +49,10 @@ Antes de começar, você precisará ter instalado na sua máquina:
                     }
                 });
             }
-            //- Removi o códide de log de console e adicionei um log específico:
+            //- Removi o código de log de console e adicionei um log específico:
             log.log(Level.INFO, "Lines processed: " + lines.size());
             
-            //Adicionei um bloco para garantir que a Threads sejam finalizadas, caso contrário, encerradas.
+            //Adicionei um bloco para garantir que as Threads sejam finalizadas, caso contrário, encerradas.
             try {
                 // Espera no máximo 60 segundos para que todas as tarefas terminem
                 if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
