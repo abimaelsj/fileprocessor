@@ -18,34 +18,37 @@ Antes de começar, você precisará ter instalado na sua máquina:
 
 1. **Clone o repositório:**
    ```bash
-   git clone [https://github.com/abimaelsj/srv-consulta-cep.gt]
+   git clone [https://github.com/abimaelsj/fileprocessor.git]
 
 ## 🛠️ Revisão de Código:
+´´´java
+    private static void processor() {
+        final List<String> lines = new ArrayList<>();
+        final int numeroThreads = 5;
+        final int numeroIteracoes = 10;
+        final Logger log = Logger.getLogger(FileProcessor.class.getName());
 
-
-
-ExecutorService executor = Executors.newFixedThreadPool(5);
-- Adicionei o código dentro do try para encerramento automático do executor:     
-try (ExecutorService executor = Executors.newFixedThreadPool(numeroThreads)) {}
-
-for (int i = 0; i < 10; i++)
- - Defini variável para o número de iterações:
-  for (int i = 0; i < numeroIteracoes; i++)
-  
-catch (Exception e)
--Tratei o erro com exception específica no lugar de uma genérica, finalizei o executor e interrompi a thread em execução logando o erro:
- catch (IOException e) {
+        try (ExecutorService executor = Executors.newFixedThreadPool(numeroThreads)) {
+            for (int i = 0; i < numeroIteracoes; i++) {
+                executor.submit(() -> {
+                    try {
+                        BufferedReader br = new BufferedReader(new
+                                FileReader("data.txt"));
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                            lines.add(line.toUpperCase());
+                        }
+                        br.close();
+                    } catch (IOException e) {
                         executor.shutdown();
                         Thread.currentThread().interrupt();
                         log.log(Level.SEVERE, "Erro ao abrir o arquivo, Thread interrompida", e);
-                    }}
+                    }
+                });
+            }
+            log.log(Level.INFO, "Lines processed: " + lines.size());
 
-System.out.println("Lines processed: " + lines.size());
-- Removi o códide de log de console e adicionei um log específico:
-log.log(Level.INFO, "Lines processed: " + lines.size());
-
-Adicionei um bloco para garantir que a Threads sejam finalizadas, caso contrário, encerradas.
-     try {
+            try {
                 // Espera no máximo 60 segundos para que todas as tarefas terminem
                 if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
                     // Se o timeout ocorrer, força o desligamento imediato
@@ -56,6 +59,6 @@ Adicionei um bloco para garantir que a Threads sejam finalizadas, caso contrári
                 Thread.currentThread().interrupt();
             }
         }
-        log.log(Level.INFO, "Todas as tarefas foram concluídas ou o tempo limite foi atingido."); 
-
-   
+        log.log(Level.INFO, "Todas as tarefas foram concluídas ou o tempo limite foi atingido.");
+    }
+´´´
